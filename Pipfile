@@ -1,0 +1,20 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+verify_ssl = true
+
+[dev-packages]
+pre-commit = "*"
+yapf = "*"
+rope = "*"
+ipython = "*"
+flake8 = "*"
+
+[packages]
+twisted = "*"
+simplejson = "*"
+stratum = "*"
+crypto = "*"
+
+[requires]
+python_version = "3.7"
