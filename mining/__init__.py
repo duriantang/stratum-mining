@@ -3,6 +3,7 @@ from subscription import MiningSubscription
 from twisted.internet import defer
 import time
 
+
 @defer.inlineCallbacks
 def setup(on_startup):
     '''Setup mining service internal environment.
@@ -24,10 +25,8 @@ def setup(on_startup):
     from lib.block_template import BlockTemplate
     from lib.coinbaser import SimpleCoinbaser
 
-    bitcoin_rpc = BitcoinRPC(settings.BITCOIN_TRUSTED_HOST,
-                             settings.BITCOIN_TRUSTED_PORT,
-                             settings.BITCOIN_TRUSTED_USER,
-                             settings.BITCOIN_TRUSTED_PASSWORD)
+    bitcoin_rpc = BitcoinRPC(settings.BITCOIN_TRUSTED_HOST, settings.BITCOIN_TRUSTED_PORT,
+                             settings.BITCOIN_TRUSTED_USER, settings.BITCOIN_TRUSTED_PASSWORD)
 
     import stratum.logger
     log = stratum.logger.get_logger('mining')
@@ -46,12 +45,8 @@ def setup(on_startup):
     coinbaser = SimpleCoinbaser(bitcoin_rpc, settings.CENTRAL_WALLET)
     (yield coinbaser.on_load)
 
-    registry = TemplateRegistry(BlockTemplate,
-                                coinbaser,
-                                bitcoin_rpc,
-                                settings.INSTANCE_ID,
-                                MiningSubscription.on_template,
-                                Interfaces.share_manager.on_network_block)
+    registry = TemplateRegistry(BlockTemplate, coinbaser, bitcoin_rpc, settings.INSTANCE_ID,
+                                MiningSubscription.on_template, Interfaces.share_manager.on_network_block)
 
     # Template registry is the main interface between Stratum service
     # and pool core logic

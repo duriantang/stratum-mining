@@ -1,11 +1,12 @@
-from twisted.internet import reactor, defer
-from stratum import settings
-
-import util
-from mining.interfaces import Interfaces
+from twisted.internet import defer, reactor
 
 import stratum.logger
+import util
+from mining.interfaces import Interfaces
+from stratum import settings
+
 log = stratum.logger.get_logger('block_updater')
+
 
 class BlockUpdater(object):
     '''
@@ -24,8 +25,8 @@ class BlockUpdater(object):
 
     def schedule(self):
         when = self._get_next_time()
-        #log.debug("Next prevhash update in %.03f sec" % when)
-        #log.debug("Merkle update in next %.03f sec" % \
+        # log.debug("Next prevhash update in %.03f sec" % when)
+        # log.debug("Merkle update in next %.03f sec" % \
         #          ((self.registry.last_update + settings.MERKLE_REFRESH_INTERVAL)-Interfaces.timestamper.time()))
         self.clock = reactor.callLater(when, self.run)
 
@@ -60,5 +61,3 @@ class BlockUpdater(object):
             log.exception("UpdateWatchdog.run failed")
         finally:
             self.schedule()
-
-

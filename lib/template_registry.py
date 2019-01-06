@@ -1,16 +1,17 @@
-import weakref
 import binascii
-import util
 import StringIO
+import weakref
 
 from twisted.internet import defer
-from lib.exceptions import SubmitException
 
 import stratum.logger
+import util
+from extranonce_counter import ExtranonceCounter
+from lib.exceptions import SubmitException
+from mining.interfaces import Interfaces
+
 log = stratum.logger.get_logger('template_registry')
 
-from mining.interfaces import Interfaces
-from extranonce_counter import ExtranonceCounter
 
 class JobIdGenerator(object):
     '''Generate pseudo-unique job_id. It does not need to be absolutely unique,
@@ -24,13 +25,14 @@ class JobIdGenerator(object):
             cls.counter = 1
         return "%x" % cls.counter
 
+
 class TemplateRegistry(object):
     '''Implements the main logic of the pool. Keep track
     on valid block templates, provide internal interface for stratum
     service and implements block validation and submits.'''
 
-    def __init__(self, block_template_class, coinbaser, bitcoin_rpc, instance_id,
-                 on_template_callback, on_block_callback):
+    def __init__(self, block_template_class, coinbaser, bitcoin_rpc, instance_id, on_template_callback,
+                 on_block_callback):
         self.prevhashes = {}
         self.jobs = weakref.WeakValueDictionary()
 
@@ -99,7 +101,6 @@ class TemplateRegistry(object):
         # Everything is ready, let's broadcast jobs!
         self.on_template_callback(new_block)
 
-
         #from twisted.internet import reactor
         #reactor.callLater(10, self.on_block_callback, new_block)
 
@@ -161,8 +162,7 @@ class TemplateRegistry(object):
 
         return j
 
-    def submit_share(self, job_id, worker_name, extranonce1_bin, extranonce2, ntime, nonce,
-                     difficulty):
+    def submit_share(self, job_id, worker_name, extranonce1_bin, extranonce2, ntime, nonce, difficulty):
         '''Check parameters and finalize block template. If it leads
            to valid block candidate, asynchronously submits the block
            back to the bitcoin network.
@@ -175,7 +175,7 @@ class TemplateRegistry(object):
 
         # Check if extranonce2 looks correctly. extranonce2 is in hex form...
         if len(extranonce2) != self.extranonce2_size * 2:
-            raise SubmitException("Incorrect size of extranonce2. Expected %d chars" % (self.extranonce2_size*2))
+            raise SubmitException("Incorrect size of extranonce2. Expected %d chars" % (self.extranonce2_size * 2))
 
         # Check for job
         job = self.get_job(job_id)
@@ -219,7 +219,7 @@ class TemplateRegistry(object):
         header_bin = job.serialize_header(merkle_root_int, ntime_bin, nonce_bin)
 
         # 4. Reverse header and compare it with target of the user
-        hash_bin = util.doublesha(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
+        hash_bin = util.doublesha(''.join([header_bin[i * 4:i * 4 + 4][::-1] for i in range(0, 20)]))
         hash_int = util.uint256_from_str(hash_bin)
         block_hash_hex = "%064x" % hash_int
         header_hex = binascii.hexlify(header_bin)

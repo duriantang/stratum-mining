@@ -1,13 +1,12 @@
-import StringIO
 import binascii
+import StringIO
 import struct
 
-import util
-import merkletree
 import halfnode
+import merkletree
+import util
 from coinbasetx import CoinbaseTransaction
 from Crypto.Hash import SHA256
-
 # Remove dependency to settings, coinbase extras should be
 # provided from coinbaser
 from stratum import settings
@@ -15,13 +14,17 @@ from stratum import settings
 witness_nonce = b'\0' * 0x20
 witness_magic = b'\xaa\x21\xa9\xed'
 
+
 class TxBlob(object):
     def __init__(self):
         self.data = ''
+
     def serialize(self):
-       return self.data
+        return self.data
+
     def deserialize(self, data):
-       self.data = data
+        self.data = data
+
 
 class BlockTemplate(halfnode.CBlock):
     '''Template is used for generating new jobs for clients.
@@ -37,7 +40,7 @@ class BlockTemplate(halfnode.CBlock):
         self.timestamper = timestamper
         self.coinbaser = coinbaser
 
-        self.prevhash_bin = '' # reversed binary form of prevhash
+        self.prevhash_bin = ''  # reversed binary form of prevhash
         self.prevhash_hex = ''
         self.timedelta = 0
         self.curtime = 0
@@ -58,20 +61,21 @@ class BlockTemplate(halfnode.CBlock):
 
         commitment = None
         txids = []
-        hashes = [None] + [ util.ser_uint256(int(t['hash'], 16)) for t in data['transactions'] ]
+        hashes = [None] + [util.ser_uint256(int(t['hash'], 16)) for t in data['transactions']]
         try:
-            txids = [None] + [ util.ser_uint256(int(t['txid'], 16)) for t in data['transactions'] ]
+            txids = [None] + [util.ser_uint256(int(t['txid'], 16)) for t in data['transactions']]
             mt = merkletree.MerkleTree(txids)
         except KeyError:
             mt = merkletree.MerkleTree(hashes)
 
-        wmt = merkletree.MerkleTree(hashes).withFirst(binascii.unhexlify('0000000000000000000000000000000000000000000000000000000000000000'))
+        wmt = merkletree.MerkleTree(hashes).withFirst(
+            binascii.unhexlify('0000000000000000000000000000000000000000000000000000000000000000'))
         self.witness = SHA256.new(SHA256.new(wmt + witness_nonce).digest()).digest()
         commitment = b'\x6a' + struct.pack(">b", len(self.witness) + len(witness_magic)) + witness_magic + self.witness
         try:
             default_witness = data['default_witness_commitment']
             commitment_check = binascii.unhexlify(default_witness)
-            if(commitment != commitment_check):
+            if (commitment != commitment_check):
                 print("calculated witness does not match supplied one! This block probably will not be accepted!")
                 commitment = commitment_check
         except KeyError:
@@ -79,7 +83,8 @@ class BlockTemplate(halfnode.CBlock):
         self.witness = commitment[6:]
 
         coinbase = self.coinbase_transaction_class(self.timestamper, self.coinbaser, data['coinbasevalue'],
-                        data['coinbaseaux']['flags'], data['height'], commitment, settings.COINBASE_EXTRAS)
+                                                   data['coinbaseaux']['flags'], data['height'], commitment,
+                                                   settings.COINBASE_EXTRAS)
 
         self.height = data['height']
         self.nVersion = data['version']
@@ -88,7 +93,9 @@ class BlockTemplate(halfnode.CBlock):
         self.hashMerkleRoot = 0
         self.nTime = 0
         self.nNonce = 0
-        self.vtx = [ coinbase, ]
+        self.vtx = [
+            coinbase,
+        ]
 
         for tx in data['transactions']:
             t = TxBlob()
@@ -123,8 +130,8 @@ class BlockTemplate(halfnode.CBlock):
         coinbase_hash (and then merkle_root) will be unique as well.'''
         job_id = self.job_id
         prevhash = binascii.hexlify(self.prevhash_bin)
-        (coinb1, coinb2) = [ binascii.hexlify(x) for x in self.vtx[0]._serialized ]
-        merkle_branch = [ binascii.hexlify(x) for x in self.merkletree._steps ]
+        (coinb1, coinb2) = [binascii.hexlify(x) for x in self.vtx[0]._serialized]
+        merkle_branch = [binascii.hexlify(x) for x in self.merkletree._steps]
         version = binascii.hexlify(struct.pack(">i", self.nVersion))
         nbits = binascii.hexlify(struct.pack(">I", self.nBits))
         ntime = binascii.hexlify(struct.pack(">I", self.curtime))
@@ -152,7 +159,7 @@ class BlockTemplate(halfnode.CBlock):
 
     def serialize_header(self, merkle_root_int, ntime_bin, nonce_bin):
         '''Serialize header for calculating block hash'''
-        r  = struct.pack(">i", self.nVersion)
+        r = struct.pack(">i", self.nVersion)
         r += self.prevhash_bin
         r += util.ser_uint256_be(merkle_root_int)
         r += ntime_bin
@@ -168,7 +175,7 @@ class BlockTemplate(halfnode.CBlock):
         self.nTime = ntime
         self.nNonce = nonce
         self.vtx[0].set_extranonce(extranonce1_bin + extranonce2_bin)
-        self.sha256 = None # We changed block parameters, let's reset sha256 cache
+        self.sha256 = None  # We changed block parameters, let's reset sha256 cache
 
     def serialize(self):
         r = []
@@ -193,7 +200,7 @@ class BlockTemplate(halfnode.CBlock):
         while len(hashes) > 1:
             newhashes = []
             for i in xrange(0, len(hashes), 2):
-                i2 = min(i+1, len(hashes)-1)
+                i2 = min(i + 1, len(hashes) - 1)
                 newhashes.append(SHA256.new(SHA256.new(hashes[i] + hashes[i2]).digest()).digest())
             hashes = newhashes
         calcwitness = SHA256.new(SHA256.new(hashes[0] + witness_nonce).digest()).digest()

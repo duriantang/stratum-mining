@@ -1,8 +1,9 @@
-from stratum.pubsub import Pubsub, Subscription
-from mining.interfaces import Interfaces
-
 import stratum.logger
+from mining.interfaces import Interfaces
+from stratum.pubsub import Pubsub, Subscription
+
 log = stratum.logger.get_logger('subscription')
+
 
 class MiningSubscription(Subscription):
     '''This subscription object implements
@@ -18,8 +19,8 @@ class MiningSubscription(Subscription):
         start = Interfaces.timestamper.time()
 
         clean_jobs = is_new_block
-        (job_id, prevhash, coinb1, coinb2, merkle_branch, version, nbits, ntime, _) = \
-                        Interfaces.template_registry.get_last_broadcast_args()
+        (job_id, prevhash, coinb1, coinb2, merkle_branch, version, nbits, ntime,
+         _) = Interfaces.template_registry.get_last_broadcast_args()
 
         # Push new job to subscribed clients
         cls.emit(job_id, prevhash, coinb1, coinb2, merkle_branch, version, nbits, ntime, clean_jobs)
@@ -30,8 +31,8 @@ class MiningSubscription(Subscription):
     def _finish_after_subscribe(self, result):
         '''Send new job to newly subscribed client'''
         try:
-            (job_id, prevhash, coinb1, coinb2, merkle_branch, version, nbits, ntime, _) = \
-                        Interfaces.template_registry.get_last_broadcast_args()
+            (job_id, prevhash, coinb1, coinb2, merkle_branch, version, nbits, ntime,
+             _) = Interfaces.template_registry.get_last_broadcast_args()
         except Exception:
             log.error("Template not ready yet")
             return result

@@ -1,10 +1,12 @@
-import util
 from twisted.internet import defer
 
 import stratum.logger
+import util
+
 log = stratum.logger.get_logger('coinbaser')
 
 # TODO: Add on_* hooks in the app
+
 
 class SimpleCoinbaser(object):
     '''This very simple coinbaser uses constant bitcoin address
@@ -15,7 +17,7 @@ class SimpleCoinbaser(object):
         self.on_load = defer.Deferred()
 
         self.address = address
-        self.is_valid = False # We need to check if pool can use this address
+        self.is_valid = False  # We need to check if pool can use this address
 
         self.bitcoin_rpc = bitcoin_rpc
         self._validate()

@@ -1,7 +1,9 @@
 import binascii
-import halfnode
 import struct
+
+import halfnode
 import util
+
 
 class CoinbaseTransaction(halfnode.CTransaction):
     '''Construct special transaction used for coinbase tx.
@@ -22,7 +24,7 @@ class CoinbaseTransaction(halfnode.CTransaction):
 
         tx_in = halfnode.CTxIn()
         tx_in.prevout.hash = 0L
-        tx_in.prevout.n = 2**32-1
+        tx_in.prevout.n = 2**32 - 1
         tx_in._scriptSig_template = (
             util.ser_number(height) + binascii.unhexlify(flags) + util.ser_number(int(timestamper.time())) + \
             chr(self.extranonce_size),
@@ -38,7 +40,7 @@ class CoinbaseTransaction(halfnode.CTransaction):
         self.vin.append(tx_in)
         self.vout.append(tx_out)
 
-        if(commitment):
+        if (commitment):
             txout_commitment = halfnode.CTxOut()
             txout_commitment.nValue = 0
             txout_commitment.scriptPubKey = commitment

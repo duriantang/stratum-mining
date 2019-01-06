@@ -5,10 +5,13 @@
 '''
 
 import time
-from twisted.internet import reactor, defer
+
+from twisted.internet import defer, reactor
 
 import stratum.logger
+
 log = stratum.logger.get_logger('interfaces')
+
 
 class WorkerManagerInterface(object):
     def __init__(self):
@@ -18,6 +21,7 @@ class WorkerManagerInterface(object):
 
     def authorize(self, worker_name, worker_password):
         return True
+
 
 class ShareLimiterInterface(object):
     '''Implement difficulty adjustments here'''
@@ -30,6 +34,7 @@ class ShareLimiterInterface(object):
            - raise SubmitException for stop processing this request
            - call mining.set_difficulty on connection to adjust the difficulty'''
         pass
+
 
 class ShareManagerInterface(object):
     def __init__(self):
@@ -47,20 +52,24 @@ class ShareManagerInterface(object):
     def on_submit_block(self, is_accepted, worker_name, block_header, block_hash, timestamp):
         log.info("Block %s %s" % (block_hash, 'ACCEPTED' if is_accepted else 'REJECTED'))
 
+
 class TimestamperInterface(object):
     '''This is the only source for current time in the application.
     Override this for generating unix timestamp in different way.'''
+
     def time(self):
         return time.time()
 
+
 class PredictableTimestamperInterface(TimestamperInterface):
     '''Predictable timestamper may be useful for unit testing.'''
-    start_time = 1345678900 # Some day in year 2012
+    start_time = 1345678900  # Some day in year 2012
     delta = 0
 
     def time(self):
         self.delta += 1
         return self.start_time + self.delta
+
 
 class Interfaces(object):
     worker_manager = None

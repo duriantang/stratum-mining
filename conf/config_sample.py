@@ -12,7 +12,7 @@ DEBUG = False
 LOGDIR = 'log/'
 
 # Main application log file.
-LOGFILE = None#'stratum.log'
+LOGFILE = None  # 'stratum.log'
 
 # Possible values: DEBUG, INFO, WARNING, ERROR, CRITICAL
 LOGLEVEL = 'INFO'
@@ -54,10 +54,9 @@ BITCOIN_TRUSTED_PASSWORD = 'somepassword'
 # Use "echo -n '<yourpassword>' | sha256sum | cut -f1 -d' ' "
 # for calculating SHA256 of your preferred password
 ADMIN_PASSWORD_SHA256 = None
-#ADMIN_PASSWORD_SHA256 = '9e6c0c1db1e0dfb3fa5159deb4ecd9715b3c8cd6b06bd4a3ad77e9a8c5694219' # SHA256 of the password
+# ADMIN_PASSWORD_SHA256 = '9e6c0c1db1e0dfb3fa5159deb4ecd9715b3c8cd6b06bd4a3ad77e9a8c5694219' # SHA256 of the password
 
 IRC_NICK = None
-
 '''
 DATABASE_DRIVER = 'MySQLdb'
 DATABASE_HOST = 'localhost'
@@ -69,6 +68,6 @@ DATABASE_PASSWORD = '**empty**'
 # Pool related settings
 INSTANCE_ID = 31
 CENTRAL_WALLET = 'set_valid_addresss_in_config!'
-PREVHASH_REFRESH_INTERVAL = 5 # in sec
-MERKLE_REFRESH_INTERVAL = 60 # How often check memorypool
+PREVHASH_REFRESH_INTERVAL = 5  # in sec
+MERKLE_REFRESH_INTERVAL = 60  # How often check memorypool
 COINBASE_EXTRAS = '/stratum/'

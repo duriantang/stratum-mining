@@ -1,5 +1,6 @@
 import struct
 
+
 class ExtranonceCounter(object):
     '''Implementation of a counter producing
        unique extranonce across all pool instances.
@@ -22,4 +23,3 @@ class ExtranonceCounter(object):
     def get_new_bin(self):
         self.counter += 1
         return struct.pack('>L', self.counter)
-
